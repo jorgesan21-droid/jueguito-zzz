@@ -256,39 +256,84 @@
             cursor: not-allowed;
         }
 
-        /* CONTROLES TÁCTILES PARA CELULAR CON LETRAS W A S D Z X */
+        /* CONTROLES EXCLUSIVOS DE DISPOSITIVOS MÓVILES (JOYSTICK + Z / X) */
         .mobile-controls {
             display: none;
             width: 100%;
             max-width: 420px;
             justify-content: space-between;
             align-items: center;
-            gap: 14px;
-            margin-top: 8px;
-            padding: 4px 2px;
+            gap: 18px;
+            margin-top: 10px;
+            padding: 6px 8px;
+            touch-action: none;
         }
 
-        .dpad-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 58px);
-            grid-template-rows: repeat(2, 54px);
-            gap: 6px;
+        .joystick-base {
+            width: 124px;
+            height: 124px;
+            border: 3px solid #ffffff;
+            background-color: #0b0b0b;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             touch-action: none;
+            flex-shrink: 0;
+        }
+
+        .joystick-crosshair-h {
+            position: absolute;
+            width: 78%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.16);
+            pointer-events: none;
+        }
+
+        .joystick-crosshair-v {
+            position: absolute;
+            width: 2px;
+            height: 78%;
+            background: rgba(255, 255, 255, 0.16);
+            pointer-events: none;
+        }
+
+        .joystick-knob {
+            width: 48px;
+            height: 48px;
+            border: 3px solid #ffff00;
+            background-color: #1a1a1a;
+            color: #ffff00;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+            transform: translate(0px, 0px);
+        }
+
+        .joystick-knob.active {
+            background-color: #ffff00;
+            color: #000000;
         }
 
         .zx-pad {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             touch-action: none;
         }
 
-        .key-btn {
+        .zx-btn {
             background: #000;
             border: 3px solid #fff;
             color: #fff;
             font-family: "Press Start 2P", "Courier New", Courier, monospace;
-            font-size: 12px;
+            width: 76px;
+            height: 56px;
+            font-size: 13px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -298,27 +343,9 @@
             touch-action: none;
         }
 
-        .key-btn .sub-arrow {
+        .zx-btn .sub-label {
             font-size: 8px;
             color: #bbb;
-        }
-
-        .key-btn.pressed,
-        .key-btn:active {
-            background: #ffffff;
-            color: #000000;
-            transform: translate(2px, 2px);
-        }
-
-        .key-btn.pressed .sub-arrow,
-        .key-btn:active .sub-arrow {
-            color: #000000;
-        }
-
-        .zx-btn {
-            width: 72px;
-            height: 56px;
-            font-size: 13px;
         }
 
         .zx-btn.z-btn {
@@ -343,14 +370,15 @@
             color: #000000;
         }
 
-        @media (max-width: 768px) {
+        /* Mostrar controles móviles SOLO en dispositivos móviles / táctiles */
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            .mobile-controls { display: flex; }
             .speech-bubble {
                 position: static;
                 margin-top: 10px;
                 width: 260px;
             }
             .enemy-area { height: auto; margin-bottom: 4px; }
-            .mobile-controls { display: flex; }
             .action-buttons { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .btn { font-size: 10px; padding: 11px 4px; }
             .dialogue-text { font-size: 10px; }
@@ -358,13 +386,17 @@
             .phase-banner { font-size: 10px; }
         }
 
-        @media (max-width: 400px) {
-            .dpad-grid {
-                grid-template-columns: repeat(3, 50px);
-                grid-template-rows: repeat(2, 48px);
+        @media (max-width: 390px) {
+            .joystick-base {
+                width: 108px;
+                height: 108px;
+            }
+            .joystick-knob {
+                width: 42px;
+                height: 42px;
             }
             .zx-btn {
-                width: 62px;
+                width: 66px;
                 height: 50px;
                 font-size: 11px;
             }
@@ -432,19 +464,16 @@
         <button type="button" class="btn" id="btnMercy" onclick="clickMainBtn(3)">💛 PIEDAD</button>
     </div>
 
-    <!-- CONTROLES MÓVILES CON LAS MISMAS LETRAS (W A S D / Z X) -->
-    <div class="mobile-controls" id="mobileControls">
-        <div class="dpad-grid">
-            <div></div>
-            <button type="button" class="key-btn" id="padW">W<span class="sub-arrow">▲</span></button>
-            <div></div>
-            <button type="button" class="key-btn" id="padA">A<span class="sub-arrow">◄</span></button>
-            <button type="button" class="key-btn" id="padS">S<span class="sub-arrow">▼</span></button>
-            <button type="button" class="key-btn" id="padD">D<span class="sub-arrow">►</span></button>
+    <!-- CONTROLES EXCLUSIVOS MÓVILES: JOYSTICK + BOTONES Z Y X -->
+    <div class="mobile-controls" id="mobileControls" aria-hidden="true">
+        <div class="joystick-base" id="joystickBase">
+            <div class="joystick-crosshair-h"></div>
+            <div class="joystick-crosshair-v"></div>
+            <div class="joystick-knob" id="joystickKnob">♥</div>
         </div>
         <div class="zx-pad">
-            <button type="button" class="key-btn zx-btn z-btn" id="padZ">Z<span class="sub-arrow">OK</span></button>
-            <button type="button" class="key-btn zx-btn x-btn" id="padX">X<span class="sub-arrow">ATRÁS</span></button>
+            <button type="button" class="zx-btn z-btn" id="padZ">Z<span class="sub-label">OK</span></button>
+            <button type="button" class="zx-btn x-btn" id="padX">X<span class="sub-label">ATRÁS</span></button>
         </div>
     </div>
 </div>
@@ -1137,8 +1166,9 @@
         }
     }
 
-    // --- CONTROLES GLOBALES DE TECLADO Y MÓVIL (W A S D / Z X) ---
+    // --- CONTROLES GLOBALES DE TECLADO Y JOYSTICK MÓVIL ---
     let keys = { w: false, a: false, s: false, d: false };
+    let analogVec = { x: 0, y: 0 };
 
     function triggerAction(action) {
         if (action === "confirm") {
@@ -1217,25 +1247,6 @@
         return "";
     }
 
-    function bindHoldKey(el, keyName, menuAction) {
-        if (!el) return;
-        const press = (e) => {
-            e.preventDefault();
-            keys[keyName] = true;
-            el.classList.add('pressed');
-            triggerAction(menuAction);
-        };
-        const release = (e) => {
-            if (e) e.preventDefault();
-            keys[keyName] = false;
-            el.classList.remove('pressed');
-        };
-        el.addEventListener('pointerdown', press);
-        el.addEventListener('pointerup', release);
-        el.addEventListener('pointerleave', release);
-        el.addEventListener('pointercancel', release);
-    }
-
     function bindTapKey(el, actionName) {
         if (!el) return;
         const press = (e) => {
@@ -1254,10 +1265,97 @@
     }
 
     function bindMobileControls() {
-        bindHoldKey(document.getElementById('padW'), 'w', 'up');
-        bindHoldKey(document.getElementById('padA'), 'a', 'left');
-        bindHoldKey(document.getElementById('padS'), 's', 'down');
-        bindHoldKey(document.getElementById('padD'), 'd', 'right');
+        const base = document.getElementById('joystickBase');
+        const knob = document.getElementById('joystickKnob');
+        let activePointerId = null;
+        let lastMenuStepDir = null;
+
+        function updateJoystickFromClient(clientX, clientY) {
+            const rect = base.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const maxRadius = rect.width * 0.34;
+
+            let dx = clientX - centerX;
+            let dy = clientY - centerY;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist > maxRadius) {
+                dx = (dx / dist) * maxRadius;
+                dy = (dy / dist) * maxRadius;
+            }
+
+            knob.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+
+            const deadzone = maxRadius * 0.24;
+            const normX = dist < deadzone ? 0 : dx / maxRadius;
+            const normY = dist < deadzone ? 0 : dy / maxRadius;
+
+            analogVec.x = normX;
+            analogVec.y = normY;
+
+            const threshold = 0.28;
+            keys.a = normX < -threshold;
+            keys.d = normX > threshold;
+            keys.w = normY < -threshold;
+            keys.s = normY > threshold;
+
+            let currentStepDir = null;
+            if (Math.abs(normX) > Math.abs(normY)) {
+                if (normX < -0.45) currentStepDir = 'left';
+                else if (normX > 0.45) currentStepDir = 'right';
+            } else {
+                if (normY < -0.45) currentStepDir = 'up';
+                else if (normY > 0.45) currentStepDir = 'down';
+            }
+
+            if (currentStepDir && currentStepDir !== lastMenuStepDir) {
+                triggerAction(currentStepDir);
+                lastMenuStepDir = currentStepDir;
+            } else if (!currentStepDir) {
+                lastMenuStepDir = null;
+            }
+        }
+
+        function resetJoystick() {
+            activePointerId = null;
+            lastMenuStepDir = null;
+            analogVec.x = 0;
+            analogVec.y = 0;
+            keys.w = false;
+            keys.a = false;
+            keys.s = false;
+            keys.d = false;
+            knob.style.transform = 'translate(0px, 0px)';
+            knob.classList.remove('active');
+        }
+
+        if (base && knob) {
+            base.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                activePointerId = e.pointerId;
+                base.setPointerCapture(e.pointerId);
+                knob.classList.add('active');
+                updateJoystickFromClient(e.clientX, e.clientY);
+            });
+
+            base.addEventListener('pointermove', (e) => {
+                if (e.pointerId !== activePointerId) return;
+                e.preventDefault();
+                updateJoystickFromClient(e.clientX, e.clientY);
+            });
+
+            const endJoystick = (e) => {
+                if (activePointerId !== null && e.pointerId !== activePointerId) return;
+                e.preventDefault();
+                resetJoystick();
+            };
+
+            base.addEventListener('pointerup', endJoystick);
+            base.addEventListener('pointercancel', endJoystick);
+            base.addEventListener('lostpointercapture', resetJoystick);
+        }
+
         bindTapKey(document.getElementById('padZ'), 'confirm');
         bindTapKey(document.getElementById('padX'), 'cancel');
     }
@@ -1286,7 +1384,14 @@
         keys.a = false;
         keys.s = false;
         keys.d = false;
-        document.querySelectorAll('.key-btn.pressed').forEach(b => b.classList.remove('pressed'));
+        analogVec.x = 0;
+        analogVec.y = 0;
+        const knob = document.getElementById('joystickKnob');
+        if (knob) {
+            knob.style.transform = 'translate(0px, 0px)';
+            knob.classList.remove('active');
+        }
+        document.querySelectorAll('.zx-btn.pressed').forEach(b => b.classList.remove('pressed'));
     });
 
     // --- MOTOR DE 10 ATAQUES FELINOS DIVIDIDOS EN FASES ---
@@ -1648,10 +1753,22 @@
         const prevX = player.x;
         const prevY = player.y;
 
-        if (keys.w && player.y > 4) player.y -= player.speed;
-        if (keys.s && player.y < canvas.height - player.size - 4) player.y += player.speed;
-        if (keys.a && player.x > 4) player.x -= player.speed;
-        if (keys.d && player.x < canvas.width - player.size - 4) player.x += player.speed;
+        let moveX = (keys.d ? 1 : 0) - (keys.a ? 1 : 0);
+        let moveY = (keys.s ? 1 : 0) - (keys.w ? 1 : 0);
+
+        if (Math.hypot(analogVec.x, analogVec.y) > 0.05) {
+            moveX = analogVec.x;
+            moveY = analogVec.y;
+        } else if (moveX !== 0 && moveY !== 0) {
+            const inv = 1 / Math.SQRT2;
+            moveX *= inv;
+            moveY *= inv;
+        }
+
+        player.x += moveX * player.speed;
+        player.y += moveY * player.speed;
+        player.x = Math.max(4, Math.min(canvas.width - player.size - 4, player.x));
+        player.y = Math.max(4, Math.min(canvas.height - player.size - 4, player.y));
 
         player.isMoving = (Math.hypot(player.x - prevX, player.y - prevY) > 0.25);
 
